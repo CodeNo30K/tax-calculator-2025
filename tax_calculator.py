@@ -213,5 +213,90 @@ def main():
         else:
             print("无效的选择，请重试！")
 
+def calculate_tax(salary=0, salary_type='monthly', bonus=0, bonus_type='separate',
+                 labor_income=0, manuscript_income=0, license_income=0,
+                 social_security_base=0, housing_fund_rate=0,
+                 special_deductions=None):
+    """
+    计算个人所得税
+    
+    Args:
+        salary: 工资收入
+        salary_type: 工资类型（'monthly' 或 'annual'）
+        bonus: 年终奖
+        bonus_type: 奖金计税方式（'separate' 或 'combined'）
+        labor_income: 劳务报酬
+        manuscript_income: 稿酬收入
+        license_income: 特许权使用费
+        social_security_base: 社保缴纳基数
+        housing_fund_rate: 公积金缴纳比例
+        special_deductions: 专项附加扣除字典
+    
+    Returns:
+        包含计算结果的字典
+    """
+    calculator = TaxCalculator()
+    
+    # 处理专项附加扣除
+    if special_deductions is None:
+        special_deductions = {}
+    
+    # 计算年度工资收入
+    if salary_type == 'monthly':
+        annual_salary = salary * 12
+    else:
+        annual_salary = salary
+    
+    # 计算社保和公积金
+    monthly_social_security = social_security_base * 0.205  # 假设社保总比例为20.5%
+    monthly_housing_fund = social_security_base * (housing_fund_rate / 100)
+    annual_deductions = (monthly_social_security + monthly_housing_fund) * 12
+    
+    # 计算专项附加扣除总额
+    monthly_special_deductions = sum(special_deductions.values())
+    annual_special_deductions = monthly_special_deductions * 12
+    
+    # 计算工资薪金所得税
+    salary_taxable_income = annual_salary - annual_deductions - annual_special_deductions - (calculator.basic_deduction * 12)
+    salary_tax = calculator.calculate_accumulated_tax(annual_salary, annual_deductions + annual_special_deductions + (calculator.basic_deduction * 12))
+    
+    # 计算年终奖个税
+    if bonus_type == 'separate':
+        bonus_tax = calculator.calculate_bonus_tax(bonus)
+        bonus_taxable_income = bonus
+    else:
+        # 并入年收入计算
+        total_income = annual_salary + bonus
+        total_tax = calculator.calculate_accumulated_tax(total_income, annual_deductions + annual_special_deductions + (calculator.basic_deduction * 12))
+        bonus_tax = total_tax - salary_tax
+        bonus_taxable_income = bonus
+    
+    # 计算其他收入的税款
+    labor_tax = labor_income * 0.2 if labor_income > 0 else 0
+    manuscript_tax = manuscript_income * 0.14 if manuscript_income > 0 else 0  # 稿酬所得适用70%计税
+    license_tax = license_income * 0.2 if license_income > 0 else 0
+    
+    # 计算总税额和税后收入
+    total_tax = salary_tax + bonus_tax + labor_tax + manuscript_tax + license_tax
+    total_income = annual_salary + bonus + labor_income + manuscript_income + license_income
+    net_income = total_income - total_tax - annual_deductions
+    
+    return {
+        'salary_taxable_income': salary_taxable_income,
+        'salary_tax': salary_tax,
+        'bonus_taxable_income': bonus_taxable_income,
+        'bonus_tax': bonus_tax,
+        'labor_income': labor_income,
+        'labor_tax': labor_tax,
+        'manuscript_income': manuscript_income,
+        'manuscript_tax': manuscript_tax,
+        'license_income': license_income,
+        'license_tax': license_tax,
+        'total_taxable_income': total_income - annual_deductions - (calculator.basic_deduction * 12),
+        'total_tax': total_tax,
+        'total_deductions': annual_deductions + annual_special_deductions + (calculator.basic_deduction * 12),
+        'net_income': net_income
+    }
+
 if __name__ == "__main__":
     main() 

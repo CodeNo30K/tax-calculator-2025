@@ -113,10 +113,13 @@ document.addEventListener('DOMContentLoaded', function() {
         // 总计
         html += `
             <div class="result-item" style="background-color: #e8f4f8;">
-                <h6>总计</h6>
-                <p>总应纳税所得额：¥${result.total_taxable_income.toFixed(2)}</p>
-                <p>总应缴税额：¥${result.total_tax.toFixed(2)}</p>
-                <p>税后收入：¥${result.net_income.toFixed(2)}</p>
+                <h6>年终奖金</h6>
+                <p>单独计税应纳税所得额：¥${result.bonus_separate_taxable_income.toFixed(2)}</p>
+                <p>单独计税应缴税额：¥${result.bonus_separate_tax.toFixed(2)}</p>
+                <p>合并计税应纳税所得额：¥${result.bonus_combined_taxable_income.toFixed(2)}</p>
+                <p>合并计税应缴税额：¥${result.bonus_combined_tax.toFixed(2)}</p>
+                <p>税额差异：¥${(result.bonus_separate_tax - result.bonus_combined_tax).toFixed(2)}</p>
+                <p class="fw-bold">建议：${result.bonus_recommendation}</p>
             </div>
         `;
 

@@ -1,14 +1,10 @@
 from flask import Flask, render_template, request, jsonify
-import sys
 import os
 from dotenv import load_dotenv
+from tax_calculator import calculate_tax
 
 # 加载环境变量
 load_dotenv()
-
-# 添加父目录到系统路径以导入tax_calculator模块
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-from tax_calculator import calculate_tax
 
 app = Flask(__name__)
 

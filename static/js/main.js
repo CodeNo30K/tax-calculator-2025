@@ -67,8 +67,12 @@ document.addEventListener('DOMContentLoaded', function() {
             html += `
                 <div class="result-item">
                     <h6>年终奖金</h6>
-                    <p>应纳税所得额：¥${result.bonus_taxable_income.toFixed(2)}</p>
-                    <p>应缴税额：¥${result.bonus_tax.toFixed(2)}</p>
+                    <p>单独计税应纳税所得额：¥${result.bonus_separate_taxable_income.toFixed(2)}</p>
+                    <p>单独计税应缴税额：¥${result.bonus_separate_tax.toFixed(2)}</p>
+                    <p>合并计税应纳税所得额：¥${result.bonus_combined_taxable_income.toFixed(2)}</p>
+                    <p>合并计税应缴税额：¥${result.bonus_combined_tax.toFixed(2)}</p>
+                    <p>税额差异：¥${(result.bonus_separate_tax - result.bonus_combined_tax).toFixed(2)}</p>
+                    <p class="fw-bold">建议：${result.bonus_recommendation}</p>
                 </div>
             `;
         }

@@ -1,10 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 import os
-from dotenv import load_dotenv
 from tax_calculator import calculate_tax
-
-# 加载环境变量
-load_dotenv()
 
 app = Flask(__name__)
 
@@ -66,6 +62,9 @@ def calculate():
             'error': str(e)
         }), 400
 
+# Vercel 需要这个
+app.debug = False
+
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 8000))
-    app.run(host='0.0.0.0', port=port) 
+    app.run(host='0.0.0.0', port=port, debug=False) 

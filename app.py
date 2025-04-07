@@ -1,12 +1,20 @@
 from flask import Flask, render_template, request, jsonify
 import sys
 import os
+from dotenv import load_dotenv
+
+# 加载环境变量
+load_dotenv()
 
 # 添加父目录到系统路径以导入tax_calculator模块
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from tax_calculator import calculate_tax
 
 app = Flask(__name__)
+
+# 配置静态文件路径
+app.static_folder = 'static'
+app.template_folder = 'templates'
 
 @app.route('/')
 def index():
@@ -63,4 +71,5 @@ def calculate():
         }), 400
 
 if __name__ == '__main__':
-    app.run(debug=True) 
+    port = int(os.environ.get('PORT', 8000))
+    app.run(host='0.0.0.0', port=port) 
